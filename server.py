@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import finnhub
 import os
 from datetime import date, timedelta
+import time
 
 load_dotenv("./.env")
 
@@ -25,6 +26,13 @@ def get_company_news(ticker="AAPL"):
 def get_stock_quote(ticker="AAPL"):
     quote = client.quote(ticker)
     return jsonify(quote)
+
+@app.route("/crypto/<symbol>")
+def get_crypto_quote(symbol="BINANCE:BTCUSDT"):
+    now = int(time.time())
+    one_min_ago = now - 60
+    data = client.crypto_candles(symbol, "1", one_min_ago, now)
+    return jsonify(data)
 
 if __name__ == "__main__":
     app.run(debug=True)
