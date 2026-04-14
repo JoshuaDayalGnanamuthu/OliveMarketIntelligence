@@ -30,6 +30,7 @@ async function loadNews(ticker = "AAPL") {
 
 async function searchStock(ticker) {
     loadNews(ticker);
+    loadAnalysis(ticker);
     const textbox = document.getElementById("searchInput");
     textbox.value = ticker;
 }
@@ -37,6 +38,7 @@ async function searchStock(ticker) {
 async function doSearch() {
     const ticker = document.getElementById("searchInput").value;
     loadNews(ticker);
+    loadAnalysis(ticker);
 }
 
 async function getStockQuotes(ticker="SPY") {
@@ -45,6 +47,11 @@ async function getStockQuotes(ticker="SPY") {
 
 }
 
+async function getCryptoQuotes(symbol="BTCUSDT") {
+    const response = await fetch(`/crypto/${symbol}`)
+    return await response.json();
+
+}
 
 async function loadTickers(ticker="SPY") {
     const id = "idx-" + ticker;
@@ -65,16 +72,97 @@ async function loadTickers(ticker="SPY") {
     }
     index_price.innerHTML = `$ ${data.c}`;
     index_change.innerHTML = `${symbol}${data.d}`;
-    // <div class="index-price">-</div>
-    // <div class="index-change">Loading...</div>
+}
+
+async function loadCrypto(ticker="BTC") {
+    const id = "idx-" + ticker;
+    const data = await getCryptoQuotes();
+    const index_card = document.getElementById(id);
+    const index_price = index_card.getElementsByClassName("index-price")[0];
+    const index_change = index_card.getElementsByClassName("index-change")[0];
+    const change = data["c"][-1] - data["o"][-1];
+
+    if (change > 0) {
+        index_change.className = "index-change positive";
+        symbol = "▲ +";
+    } else if (change < 0) {
+        index_change.className = "index-change negative";
+        symbol = "▼ -";
+    } else {
+        index_change.className = "index-change neutral";
+        symbol = "▶  ";
+    }
+    index_price.innerHTML = `$ ${data["c"][-1]}`;
+    index_change.innerHTML = `${symbol}${change}`;
+}
+
+async function getAIanalysis(ticker="SPY") {
+    const response = await fetch(`/analysis/${ticker}`)
+    return await response.json();
+}
+
+async function loadAnalysis(ticker="SPY") {
+    const data = await getAIanalysis(ticker);
+    document.getElementById("aiTicker").innerText = ticker;
+    const container = document.getElementById("aiBody");
+
+    container.innerHTML = `
+                <div style="padding: 8px 4px;">ß
+                    
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                        <span style="font-size: 18px; font-weight: 800; color: white; letter-spacing: 2px;">${ticker}</span>
+                        <span style="
+                            padding: 3px 10px;
+                            border-radius: 20px;
+                            font-size: 11px;
+                            font-weight: 700;
+                            letter-spacing: 1px;
+                            text-transform: uppercase;
+                            background: ${data.sentiment.toLowerCase().includes('bull') ? 'rgba(0,255,100,0.15)' : 
+                                        data.sentiment.toLowerCase().includes('bear') ? 'rgba(255,60,60,0.15)' : 
+                                        'rgba(255,200,0,0.15)'};
+                            color: ${data.sentiment.toLowerCase().includes('bull') ? '#00ff64' : 
+                                    data.sentiment.toLowerCase().includes('bear') ? '#ff4444' : 
+                                    '#ffc800'};
+                            border: 1px solid ${data.sentiment.toLowerCase().includes('bull') ? 'rgba(0,255,100,0.3)' : 
+                                                data.sentiment.toLowerCase().includes('bear') ? 'rgba(255,60,60,0.3)' : 
+                                                'rgba(255,200,0,0.3)'};
+                        ">${data.sentiment}</span>
+                    </div>
+
+                    <p style="color: rgba(255,255,255,0.85); font-size: 13px; line-height: 1.6; margin-bottom: 16px;">
+                        ${data.summary}
+                    </p>
+
+                    <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+                        <div style="font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.4); margin-bottom: 8px;">KEY METRICS</div>
+                        ${data.key_metrics.map(metric => `
+                            <div style="
+                                display: flex;
+                                align-items: flex-start;
+                                gap: 8px;
+                                padding: 5px 0;
+                                border-bottom: 1px solid rgba(255,255,255,0.05);
+                                font-size: 12px;
+                                color: rgba(255,255,255,0.75);
+                            ">
+                                <span style="color: rgba(100,220,255,0.7); margin-top: 1px;">▸</span>
+                                ${metric}
+                            </div>
+                        `).join("")}
+                    </div>
+
+                </div>
+            `;
 }
 
 window.onload = function () {
     loadNews("SPY");
+    loadAnalysis("SPY");
     loadTickers("SPY");
     loadTickers("QQQ");
     loadTickers("DIA");
-    loadTickers("BTC");
+    loadCrypto("BTC");
 };
 
 
@@ -86,5 +174,5 @@ setInterval(loadNews, 1000000);
 setInterval(loadTickers, 100000, "SPY");
 setInterval(loadTickers, 100000, "QQQ");
 setInterval(loadTickers, 100000, "DIA");
-setInterval(loadTickers, 100000, "BTC");
+setInterval(loadCrypto, 100000,  "BTC");
 
