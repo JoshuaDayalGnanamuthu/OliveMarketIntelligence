@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>OliveInfo</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    </head>
+    <body>
+        <div class="glow-orb2"></div>
+        <header>
+            <div class="logo">
+                OLIVE
+                <span>MARKET INTELLIGENCE</span>
+            </div>
+            <div class="header-right">
+                <div class="live-badge">
+                    <div class="live-signal"></div>
+                        LIVE
+                </div>
+                <div class="clock" id="clock">00:00:00</div>
+            </div>
+        </header>
+
+        <div class="ticker-tape">
+            <div class="ticker-track" id="tickerTrack">
+                <!--Will be implemented in scripts.js-->
+            </div>
+        </div>
+
+        <main>
+
+            <div class="index-row" id="indexRow">
+
+                <div class="index-card loading" id="idx-SPY" onclick="searchStock('SPY')">
+                    <div class="index-name">S&P 500</div>
+                    <div class="index-price">-</div>
+                    <div class="index-change">Loading...</div>
+                </div>
+
+                <div class="index-card loading" id="idx-QQQ" onclick="searchStock('QQQ')">
+                    <div class="index-name">NASDAQ</div>
+                    <div class="index-price">-</div>
+                    <div class="index-change">Loading...</div>
+                </div>
+
+                <div class="index-card loading" id="idx-DIA" onclick="searchStock('DIA')">
+                    <div class="index-name">DOW</div>
+                    <div class="index-price">-</div>
+                    <div class="index-change">Loading...</div>
+                </div>
+
+                <div class="index-card loading" id="idx-BTC-USD" onclick="searchStock('BTC')">
+                    <div class="index-name">BITCOIN</div>
+                    <div class="index-price">-</div>
+                    <div class="index-change">Loading...</div>
+                </div>
+
+            </div>
+
+
+            <div class="search-section">
+                <div class="search-wrapper">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Enter a stock ticker or company name"/>
+                    </div>
+                    <button class="btn btn-primary" onclick="doSearch()">SEARCH</button>
+                </div>
+                <div class="quick-chips">
+                    <span class="chip" onclick="searchStock('AAPL')">AAPL</span>
+                    <span class="chip" onclick="searchStock('NVDA')">NVDA</span>
+                    <span class="chip" onclick="searchStock('TSLA')">TSLA</span>
+                    <span class="chip" onclick="searchStock('MSFT')">MSFT</span>
+                    <span class="chip" onclick="searchStock('GOOGL')">GOOGL</span>
+                    <span class="chip" onclick="searchStock('AMZN')">AMZN</span>
+                    <span class="chip" onclick="searchStock('META')">META</span>
+                    <span class="chip" onclick="searchStock('AMD')">AMD</span>
+                </div>
+            </div>
+
+            <div class="stock-panel">
+                <div class="card" id="stockcard">
+                    <div class="card-header">
+                        <span class="card-title">STOCK INFO</span>
+                        <span class="market-status" id="marketStatus" style="color: var(--text-dim)">SELECT A TICKER</span>
+
+                    </div>
+                    <div class="card-body" id="stockBody">
+                        <div class="placeholder-state">
+                            <div class="placeholder-icon">info..</div>
+                            <p>Search for a stock to get price data, latest market news, and an AI generated analysis</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="news-panel">
+                <div class="card" style="height: 100%">
+                    <div class="card-header">
+                        <span class="card-title">MARKET NEWS</span>
+                        <span id="newsCount" style="font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-dim);">—</span>
+                    </div>
+                    <div class="news-scroll" id="newsBody">
+                        <div class="placeholder-state">
+                            <div class="placeholder-icon">news..</div>
+                            <p>News will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="ai-panel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="ai-label">AI ANALYSIS</div>
+                        <span id="aiTicker" style="font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim);">—</span>
+                    </div>
+                    <div class="card-body" id="aiBody">
+                        <div class="placeholder-state">
+                            <div class="placeholder-icon">⬡</div>
+                            <p>AI generated market analysis and investment insights</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+        
+        </main>
+        <script src="{{ url_for('static', filename='script.js') }}"></script>
+    </body>
+</html>
