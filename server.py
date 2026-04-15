@@ -11,6 +11,7 @@ from pydantic import BaseModel
 
 load_dotenv("./.env")
 cache = {}
+news_cache = {}
 
 app = Flask(__name__)
 client = finnhub.Client(api_key=os.getenv("API_KEY"))
@@ -28,9 +29,12 @@ def home():
 
 @app.route("/news/<ticker>")
 def get_company_news(ticker="AAPL"):
+    if ticker in news_cache:
+        return news_cache[ticker]
     today = date.today()
     three_days_ago = today - timedelta(days=3)
     news = client.company_news(ticker, _from=three_days_ago.isoformat(), to=today.isoformat())
+    news_cache[ticker] = jsonify(news)
     return jsonify(news)
 
 @app.route("/quote/<ticker>")
@@ -47,6 +51,16 @@ def get_crypto_quote(symbol="BTCUSDT"):
         return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route("/company/<ticker>")
+def get_company_information(ticker="AAPL"):
+    company_info = client.company_profile2(symbol=ticker)
+    return jsonify(company_info)
+
+@app.route("/financials/<ticker>")
+def get_financial_information(ticker="AAPL"):
+    financials = client.company_basic_financials(symbol=ticker, metric="all")
+    return jsonify(financials)
 
 @app.route("/analysis/<ticker>")
 def get_ai_analysis(ticker="AAPL"):
@@ -83,4 +97,5 @@ def get_ai_analysis(ticker="AAPL"):
     return jsonify(result)   
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
